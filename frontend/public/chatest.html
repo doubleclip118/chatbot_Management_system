@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    
+    <style>
+        @font-face {
+			font-family: 'TheJamsil5Bold';
+			src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302_01@1.0/TheJamsil5Bold.woff2') format('woff2');
+			font-weight: 700;
+			font-style: normal;
+		}
+        body,
+        input,
+        button,
+        textarea {
+            font-family: 'TheJamsil5Bold', sans-serif;
+            color: #272727;
+        }
+        /* 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-size: 20px;
+        }
+        ul, li {
+            list-style: none;
+        }
+        input,
+        button,
+        textarea {
+            border: none;
+            outline: none;
+            color: inherit;
+            background: inherit;
+        }
+        p,
+        span,
+        strong {
+            word-break: keep-all;
+        }
+        button,
+        .bi {
+            cursor: pointer;
+        }
+        .btn {
+            padding: 8px 25px;
+            border: 1px solid #aaa;
+            background: #fff;
+            border-radius: 5px;
+            font-size: 18px;
+            color: #272727;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: .5s;
+        }
+        .btn:hover {
+            background: #272727;
+            color: #fff;
+        }
+        .btn.btn_b {
+            background: #272727;
+            color: #fff;
+        }
+        .btn.btn_b:hover {
+            background: #eee;
+            color: #000000;
+        }
+        .btn_logout {
+            position: absolute;
+            top: 6px;
+            right: 10px;
+        }
+        /* wrap */
+        .wrap {
+            display: flex;
+        }
+        .left_box,
+        .right_box {
+            position: relative;
+            width: calc(100vw/2);
+            padding: 0 10px 10px;
+        }
+        /* heder */
+        .wrap .header {
+            text-align: center;
+            line-height: 50px;
+            border-top: 2px solid #eee;
+            border-bottom: 2px solid #eee;
+        }
+        .wrap .header strong {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        /* content */
+        .wrap .content {
+            display: flex;
+            flex-direction: column;
+        }
+        .wrap .content>* {
+            padding: 30px 20px;
+            margin-bottom: 20px;
+        }
+        .wrap .manual_wrap .title_box,
+        .wrap .history_wrap .title_box,
+        .wrap .function_manage_wrap .title_box,
+        .wrap .chatbot_test_wrap .title_box{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .wrap .manual_wrap .radio_box {
+            display: flex;
+            gap: 10px;
+            padding-top: 10px;
+        }
+        .wrap .manual_wrap .radio_box input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .wrap .history_wrap .title_box,
+        .wrap .function_manage_wrap .title_box {
+            margin-bottom: 10px;
+        }
+        .wrap .history_wrap .tit,
+        .wrap .function_manage_wrap .tit {
+            border-radius: 5px 5px 0 0;
+            border: none;
+            border-top: 1px solid #888;
+            border-left: 1px solid #888;
+            border-right: 1px solid #888;
+        }
+        .wrap .history_wrap ul{
+            display: flex;
+            justify-content: space-between;
+            overflow: hidden;
+            border-bottom: 1px solid #888;
+            border-left: 1px solid #888;
+            border-right: 1px solid #888;
+        }
+        .wrap .history_wrap ul li{
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .wrap .history_wrap ul li~li{
+            border-left: 1px solid #888;
+        }
+        .wrap .history_wrap ul li strong{
+            line-height: 50px;
+            background: #ddd;
+            border-bottom: 1px solid #888;
+        }
+        .wrap .history_wrap ul li span{
+            line-height: 1.2;
+            padding: 5px 0;
+        }
+        .manual_box textarea {
+            border: 1px solid #888;
+        }
+        /* function_manage_wrap 기능관리 */
+        .function_manage_wrap ul {
+            position: relative;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            padding: 5px 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .function_manage_wrap ul::before {
+            content: '';
+            width: 100%;
+            height: 1px;
+            background: #eee;
+            position: absolute;
+            left: 0;
+            top: 47px;
+        }
+        .function_manage_wrap ul::after {
+            content: '';
+            width: 100%;
+            height: 1px;
+            background: #eee;
+            position: absolute;
+            left: 0;
+            bottom: 43px;
+        }
+        .function_manage_wrap textarea,
+        .function_manage_wrap input {
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            padding: 5px 5px;
+            background: #fff;
+            width: 100%;
+        }
+        .function_manage_wrap textarea {
+            margin-left: 18px;
+        }
+        .function_manage_wrap ul li {
+            display: flex;
+            align-items: center;
+        }
+        .function_manage_wrap .title {
+            justify-content: space-between;
+        }
+        .function_manage_wrap .con1 {
+            align-items: start;
+            padding: 10px 0;
+        }
+        .function_manage_wrap .con2 {
+            align-items: center;
+            justify-content: space-between;
+        }
+        .function_manage_wrap .input_box,
+        .function_manage_wrap .textarea_box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+        .function_manage_wrap .input_box span,
+        .function_manage_wrap .textarea_box span {
+            color: #555;
+        }
+        .f_g10 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .f_c_g10 {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+
+        /* footer */
+        .wrap .footer {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+            text-align: center;
+            line-height: 70px;
+            padding: 0 10px;
+        }
+        /* modal */
+        .modal_wrap {
+            display: none;
+        }
+        .modal_wrap::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .modal_wrap .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            background: #fff;
+            border: 2px solid #272727;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .modal_wrap .modal .title_box {
+            background: #272727;
+            color: #fff;
+            line-height: 50px;
+            width: 100%;
+            text-align: center;
+        }
+        .modal_wrap .modal .btn_bot {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 5px 0;
+            border-top: 1px solid #ddd;
+        }
+        /* 적용 버튼 */
+        .ver_modal .modal ul{
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 25px 20px;
+            border-top: 1px solid #ddd;
+        }
+        .ver_modal .modal ul li{
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ver_modal .modal .radio_box {
+            display: flex;
+            gap: 30px;
+            padding: 10px 0;
+        }
+        .ver_modal .modal .radio_box input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .ver_modal .modal .radio_box span {
+            margin-left: -15px;
+        }
+        .ver_modal .modal .input_box input {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 400px;
+        }
+        /* 챗봇 테스트 버튼 */
+        .phone_wrap {
+            width: 600px;
+            background: #272727;
+            border-radius: 20px;
+            padding: 0 15px 15px;
+        }
+        .phone_header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            color: #fff;
+        }
+        .phone_wrap .bi-x-circle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            font-size: 35px;
+            transform: translate(0, -40%);
+        }
+        .phone_content,
+        .phone_content2 {
+            background: #f9f9f9;
+            height: 800px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .phone_radio_box {
+            background: #f9f9f9;
+            height: 40px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .phone_radio_box input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .phone_footer,
+        .phone_footer2 {
+            display: flex;
+            justify-content: space-between;
+        }
+        .phone_footer textarea,
+        .phone_footer2 textarea {
+            flex: 8;
+            resize: none;
+            padding: 10px;
+            height: 120px;
+            background: #f9f9f9;
+            border-radius: 0 0 0 20px;
+        }
+        .phone_footer button,
+        .phone_footer2 button {
+            flex: 2;
+            padding: 20px 10px;
+            color: #272727;
+            background: #ffd600;
+            border-radius: 0 0 15px 0;
+        }
+        /* 스크롤 막대 css */
+        .wrap .history_wrap::-webkit-scrollbar,
+        .function_manage_wrap .lang_wrap::-webkit-scrollbar {
+            width: 15px;
+        }
+        .wrap .history_wrap::-webkit-scrollbar-track,
+        .function_manage_wrap .lang_wrap::-webkit-scrollbar-track {
+            background: #eee;
+            border-radius: 50px;
+        }
+        .wrap .history_wrap::-webkit-scrollbar-thumb,
+        .function_manage_wrap .lang_wrap::-webkit-scrollbar-thumb {
+            background: #272727;
+            border-radius: 50px;
+        }
+
+
+
+        /* 기능관리 스크롤 */
+        .function_manage_wrap .lang_wrap {
+            height: 400px; /* 높이 설정 */
+            overflow-y: scroll; /* 세로 스크롤바 필요 시 표시 */
+        }
+        /* 출시히스토리 스크롤 */
+        .wrap .history_wrap {
+            max-height: 400px; /* 최대 높이 설정 */
+            overflow-y: auto; /* 세로 스크롤바 필요 시 표시 */
+        }
+        @media (max-width: 850px){
+            .wrap {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="left_box">
+            <div class="header">
+                <strong>챗봇</strong>
+                <span id="port3334Status">운영중지</span>
+            </div>
+            <div class="content">
+                <div class="manual_wrap">
+                    <div class="title_box">
+                        <strong>메뉴얼</strong>
+                        <div class="btn_box">
+                            <button class="btn btn_w" id="load_chatbot">불러오기</button>
+                            <button class="btn btn_w" id="save_chatbot">저장</button>
+                        </div>
+                    </div>
+                    <div class="manual_box">
+                        <textarea rows="20" style="width:100%;" name="contents" id="textarea_chatbot"></textarea>
+                    </div>
+                    <!-- ----------------------------------------------- -->
+                    <div class="radio_box" style="visibility: hidden;">
+                        <input type='radio'><span>0</span>
+                        <input type='radio'><span>0</span>
+                        <input type='radio'><span>0</span>
+                        <input type='radio'><span>0</span>
+                        <input type='radio'><span>0</span>
+                    </div>
+                    <!-- ----------------------------------------------- -->
+                </div>
+                <div class="history_wrap">
+                    <div class="title_box">
+                        <strong>출시 히스토리</strong>
+                        <div class="btn_box">
+                            <button type="button" id="chatbot_refresh" class="btn btn_w">히스토리 가져오기</button>
+                        </div>
+                    </div>
+                    <ul class="tit">
+                        <li><strong>버전</strong></li>
+                        <li><strong>변경사항</strong></li>
+                        <li><strong>날짜</strong></li>
+                    </ul>
+                    <ul>
+                        <li><span id="chatbot_version_text">내용</span></li>
+                        <li><span id="chatbot_change">내용</span></li>
+                        <li><span id="chatbot_date">날짜</span></li>
+                    </ul>
+                </div>
+                <!-- <div class="function_manage_wrap">
+                    <div class="title_box">
+                        <strong>기능관리</strong>
+                        <div class="btn_box">
+                            <button type="button" id="kiosk_refresh_function" class="btn btn_w">새로고침</button>
+                        </div>
+                    </div>
+                    <ul id="change_china">
+                        <li class="title">
+                            <span>설정-중국어변경</span>
+                            <button class="btn btn_b">저장</button>
+                        </li>
+                        <li class="con1 f_c_g10">
+                            <div class="input_box">
+                                <span>응답메시지</span>
+                                <input type="text" placeholder="-">
+                            </div>
+                            <div class="textarea_box">
+                                <span>프롬프트</span>
+                                <textarea rows="1" placeholder="-"></textarea>
+                            </div>
+                        </li>
+                        <li class="con2 f_g10">
+                            <div class="input_box">
+                                <span>action</span>
+                                <input type="text" placeholder="-">
+                            </div>
+                            <div class="input_box">
+                                <span>type</span>
+                                <input type="text" placeholder="-">
+                            </div>
+                            <div class="input_box">
+                                <span>data</span>
+                                <input type="text" placeholder="-">
+                            </div>
+                        </li>
+                    </ul>
+                </div> -->
+                <div class="chatbot_test_wrap">
+                    <div class="title_box">
+                        <strong>챗봇 테스트</strong>
+                        <div class="btn_box">
+                            <button type="button" id="chatbot_test_btn" class="btn btn_w" onclick="btn_test2()">테스트하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <!-- <button class="btn" id="chatbot_restart">재실행</button> -->
+                <button class="btn btn_b" id="chatbot_commit" onclick="btn_save()">적용</button>
+            </div>
+        </div>
+        <div class="right_box">
+            <div class="header">
+                <strong>키오스크</strong>
+                <span id="port3335Status">운영중</span>
+                <button class="btn_logout btn btn_b" id="logoutButton">로그아웃</button>
+            </div>
+            <div class="content">
+                <div class="manual_wrap">
+                    <div class="title_box">
+                        <strong>메뉴얼</strong>
+                        <div class="btn_box">
+                            <button class="btn btn_w" id="load_kiosk" >불러오기</button>
+                            <button class="btn btn_w" id="save_kiosk">저장</button>
+                        </div>
+                    </div>
+                    <div class="manual_box">
+                        <textarea rows="20" style="width:100%;" name="contents" id="textarea2"></textarea>
+                    </div>
+                    <div class="radio_box" id="radio_kiosk">
+                        <input type='radio' name='type' value='first' checked><span>시작</span>
+                        <input type='radio' name='type' value='menu'><span>메뉴</span>
+                        <input type='radio' name='type' value='payment'><span>결제</span>
+                        <input type='radio' name='type' value='login'><span>회원가입</span>
+                        <input type='radio' name='type' value='orderlist'><span>주문내역</span>
+                    </div>
+                </div>
+                <div class="history_wrap">
+                    <div class="title_box">
+                        <strong>출시 히스토리</strong>
+                        <div class="btn_box">
+                            <button type="button" id="kiosk_refresh" class="btn btn_w">히스토리 가져오기</button>
+                        </div>
+                    </div>
+                    <ul class="tit">
+                        <li><strong>버전</strong></li>
+                        <li><strong>변경사항</strong></li>
+                        <li><strong>날짜</strong></li>
+                    </ul>
+                    <ul>
+                        <li><span id="kiosk_version_text">내용</span></li>
+                        <li><span id="kiosk_change">내용</span></li>
+                        <li><span id="kiosk_date">날짜</span></li>
+                    </ul>
+                </div>
+                <div class="function_manage_wrap">
+                    <div class="title_box">
+                        <strong>기능관리</strong>
+                        <div class="btn_box">
+                            <button type="button" id="kiosk_refresh_function" class="btn btn_w">새로고침</button>
+                        </div>
+                    </div>
+                    <div class="lang_wrap">
+                        <ul id="change_china">
+                            <li class="title">
+                                <span>설정-중국어변경</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="change_english">
+                            <li class="title">
+                                <span>설정-영어변경</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="change_japan">
+                            <li class="title">
+                                <span>설정-일본어변경</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="change_korean">
+                            <li class="title">
+                                <span>설정-한국어변경</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="chat_employee_ko">
+                            <li class="title">
+                                <span>직원호출-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="chat_employee_jp">
+                            <li class="title">
+                                <span>직원호출-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="chat_employee_en">
+                            <li class="title">
+                                <span>직원호출-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="chat_employee_ch">
+                            <li class="title">
+                                <span>직원호출-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_cancel_ch">
+                            <li class="title">
+                                <span>주문취소-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_cancel_en">
+                            <li class="title">
+                                <span>주문취소-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_cancel_jp">
+                            <li class="title">
+                                <span>주문취소-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_cancel_ko">
+                            <li class="title">
+                                <span>주문취소-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_recommand_ch">
+                            <li class="title">
+                                <span>메뉴추천-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_recommand_en">
+                            <li class="title">
+                                <span>메뉴추천-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_recommand_jp">
+                            <li class="title">
+                                <span>메뉴추천-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_recommand_ko">
+                            <li class="title">
+                                <span>메뉴추천-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_request_ch">
+                            <li class="title">
+                                <span>메뉴요청-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_request_en">
+                            <li class="title">
+                                <span>메뉴요청-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_request_jp">
+                            <li class="title">
+                                <span>메뉴요청-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="menu_request_ko">
+                            <li class="title">
+                                <span>메뉴요청-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="package_ch">
+                            <li class="title">
+                                <span>포장주문-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="package_en">
+                            <li class="title">
+                                <span>포장주문-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="package_jp">
+                            <li class="title">
+                                <span>포장주문-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="package_ko">
+                            <li class="title">
+                                <span>포장주문-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_age_ch">
+                            <li class="title">
+                                <span>나이추천-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_age_en">
+                            <li class="title">
+                                <span>나이추천-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_age_jp">
+                            <li class="title">
+                                <span>나이추천-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_age_ko">
+                            <li class="title">
+                                <span>나이추천-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_gender_ch">
+                            <li class="title">
+                                <span>성별추천-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_gender_en">
+                            <li class="title">
+                                <span>성별추천-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_gender_jp">
+                            <li class="title">
+                                <span>성별추천-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_gender_ko">
+                            <li class="title">
+                                <span>성별추천-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_popular_ch">
+                            <li class="title">
+                                <span>인기도추천-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_popular_en">
+                            <li class="title">
+                                <span>인기도추천-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_popular_jp">
+                            <li class="title">
+                                <span>인기도추천-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="recommand_popular_ko">
+                            <li class="title">
+                                <span>인기도추천-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="store_ch">
+                            <li class="title">
+                                <span>매장주문-중국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="store_en">
+                            <li class="title">
+                                <span>매장주문-영어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="store_jp">
+                            <li class="title">
+                                <span>매장주문-일본어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                        <ul id="store_ko">
+                            <li class="title">
+                                <span>매장주문-한국어</span>
+                                <button class="btn btn_b">저장</button>
+                            </li>
+                            <li class="con1 f_c_g10">
+                                <div class="input_box">
+                                    <span>응답메시지</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="textarea_box">
+                                    <span>프롬프트</span>
+                                    <textarea rows="1" placeholder="-"></textarea>
+                                </div>
+                            </li>
+                            <li class="con2 f_g10">
+                                <div class="input_box">
+                                    <span>action</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>type</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                                <div class="input_box">
+                                    <span>data</span>
+                                    <input type="text" placeholder="-">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chatbot_test_wrap">
+                    <div class="title_box">
+                        <strong>챗봇 테스트</strong>
+                        <div class="btn_box">
+                            <button type="button" id="chatbot_test_btn" class="btn btn_w" onclick="btn_test()">테스트하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <!-- <button class="btn" id="kiosk_restart">재실행</button> -->
+                <button class="btn btn_b" id="kiosk_commit" onclick="btn_save2()">적용</button>
+            </div>
+        </div>
+    </div>
+    <!-- modal -->
+    <div id="version_modal" class="modal_wrap ver_modal">
+        <div class="modal">
+            <div class="title_box">
+                <strong>적용 내용</strong>
+            </div>
+            <ul class="input_box">
+                <li>
+                    <span>챗봇 버전명</span>
+                    <input type="text" id="versionNumber">
+                </li>
+                <li>
+                    <span>변경내용</span>
+                    <input type="text" id="versionDesc">
+                </li>
+            </ul>
+            <div class="btn_bot">
+                <button class="btn" onclick="btn_close()">닫기</button>
+                <button class="btn btn_b" id='commit_chatbot'>확인</button>
+            </div>
+        </div>
+    </div>
+    <div id="version_modal2" class="modal_wrap ver_modal">
+        <div class="modal">
+            <div class="title_box">
+                <strong>적용 내용</strong>
+            </div>
+            <ul class="input_box">
+                <li>
+                    <span>키오스크 버전명</span>
+                    <input type="text" id="versionNumber2">
+                </li>
+                <li>
+                    <span>변경내용</span>
+                    <input type="text" id="versionDesc2">
+                </li>
+            </ul>
+            <div class="btn_bot">
+                <button class="btn" onclick="btn_close()">닫기</button>
+                <button class="btn btn_b" id='commit_kiosk'>확인</button>
+            </div>
+        </div>
+    </div>
+    <div id="chatbot_test_modal2" class="modal_wrap chat_modal">
+        <div class="modal" style="background: transparent; border: transparent;">
+            <div class="phone_wrap">
+                <div class="phone_header">
+                    <strong>타키 챗봇</strong>
+                    <i class="bi bi-x-circle" onclick="btn_close()"></i>
+                </div>
+                <div class="phone_content2">
+                    채팅
+                </div>
+                <!-- <div class="phone_radio_box" style="visibility: hidden;">
+                    <input type='radio' value='first' checked><span>   0 00000  </span>
+                    <input type='radio'  value='menu'><span>    0 000000 </span>
+                    <input type='radio'  value='payment'><span>  0 000000  </span>
+                    <input type='radio'  value='login'><span>   00000  </span>
+                    <input type='radio'  value='orderlist'><span>   0  000000</span>
+                </div> -->
+                <div class="phone_footer2">
+                    <textarea type="text" placeholder="무엇이든 물어보세요~"></textarea>
+                    <button>전송</button>
+                </div>
+            </div>
+        </div>
+    </div><div id="chatbot_test_modal" class="modal_wrap chat_modal">
+        <div class="modal" style="background: transparent; border: transparent;">
+            <div class="phone_wrap">
+                <div class="phone_header">
+                    <strong>타키 챗봇</strong>
+                    <i class="bi bi-x-circle" onclick="btn_close()"></i>
+                </div>
+                <div class="phone_content">
+                    채팅
+                </div>
+                <div class="phone_radio_box">
+                    <input type='radio' name='type_kiosk' value='시작' checked><span>시작</span>
+                    <input type='radio' name='type_kiosk' value='메뉴'><span>메뉴</span>
+                    <input type='radio' name='type_kiosk' value='결제'><span>결제</span>
+                    <input type='radio' name='type_kiosk' value='회원가입'><span>회원가입</span>
+                    <input type='radio' name='type_kiosk' value='주문내역'><span>주문내역</span>
+                </div>
+                <div class="phone_footer">
+                    <textarea type="text" placeholder="무엇이든 물어보세요~"></textarea>
+                    <button>전송</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function btn_save(){
+            $('#version_modal').show();
+        }
+        function btn_save2(){
+            $('#version_modal2').show();
+        }
+        function btn_test(){
+            $('#chatbot_test_modal').show();
+        }
+        function btn_test2(){
+            $('#chatbot_test_modal2').show();
+        }
+        function btn_close(){
+            $('#version_modal').hide();
+            $('#version_modal2').hide();
+            $('#chatbot_test_modal').hide();
+            $('#chatbot_test_modal2').hide();
+        }
+        
+        //웹소켓 연결
+        var ws = new WebSocket("ws://**/ws");
+
+
+
+        ws.onopen = function() {
+            console.log('서버에 연결되었습니다.');
+        };
+        
+        // 웹소켓으로부터 메시지를 받았을 때 실행되는 이벤트
+        ws.onmessage = function(event) {
+            let chatbot_server = document.getElementById('serverStatus_chatbot');
+            let kiosk_server = document.getElementById('serverStatus_kiosk');
+            console.log('서버로부터 메시지를 받았습니다: ' + event.data);
+            const message = event.data;
+            
+            if (message.includes("Port")) {
+                const portStatus = message.split(": ");
+                const port = portStatus[0].split(" ")[1];
+                const isOpen = portStatus[1].includes("True");
+                const statusColor = isOpen ? 'blue' : 'red';
+                const openclose = isOpen ? '운영중' : '운영정지';
+                const element = document.getElementById(`port${port}Status`);
+                if (element) {
+                    element.style.color = statusColor;
+                    element.textContent = openclose; // 또는 value 대신 textContent 사용
+                }
+            }
+            
+        };
+    
+        // 웹소켓 연결이 닫혔을 때 실행되는 이벤트
+        ws.onclose = function() {
+            console.log('서버와의 연결이 종료되었습니다.');
+        };
+    
+        // 웹소켓 오류가 발생했을 때 실행되는 이벤트
+        ws.onerror = function(error) {
+            console.error('웹소켓 오류 발생: ', error);
+        };
+
+
+        //화면 로딩되었을떄
+        window.onload = async function() {
+            const response_chatbot = await fetch('http://**/get_chatbot_text_file',{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            const text_chatbot = await response_chatbot.text();
+            document.getElementById('textarea_chatbot').value = text_chatbot;
+
+            const response_kiosk = await fetch('http://**/get_kiosk_text_file/first',{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            const text_kiosk = await response_kiosk.text();
+            document.getElementById('textarea2').value = text_kiosk;
+
+            try {
+                const response = await fetch('http://**/r_chatbot_version', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data)
+                    document.getElementById("chatbot_version_text").innerHTML = '';
+                    document.getElementById("chatbot_change").innerHTML = '';
+                    document.getElementById("chatbot_date").innerHTML = '';
+
+                    // 배열의 각 요소에 대해 HTML 요소를 생성하고 추가
+                    
+                    data.forEach(change => {
+                        let versionItem = document.createElement("li");
+                        versionItem.innerText = change.version;
+                        document.getElementById("chatbot_version_text").appendChild(versionItem);
+                
+                        let descItem = document.createElement("li");
+                        descItem.innerText = change.desc;
+                        document.getElementById("chatbot_change").appendChild(descItem);
+                        
+                        let date=change.reg_date.replace("T","일 ")
+                        let dateItem = document.createElement("li");
+                        dateItem.innerText = date;
+                        document.getElementById("chatbot_date").appendChild(dateItem);
+                    });
+
+                } else {
+                    console.log('버전 조회 실패');
+                }
+            } catch (error) {
+                console.log('오류 발생: ' + error);
+            }
+
+            try {
+                const response = await fetch('http://**/r_kiosk_version', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data)
+                    document.getElementById("kiosk_version_text").innerHTML = '';
+                    document.getElementById("kiosk_change").innerHTML = '';
+                    document.getElementById("kiosk_date").innerHTML = '';
+
+                    // 배열의 각 요소에 대해 HTML 요소를 생성하고 추가
+                    data.forEach(change => {
+                        let versionItem = document.createElement("li");
+                        versionItem.innerText = change.version;
+                        document.getElementById("kiosk_version_text").appendChild(versionItem);
+                
+                        let descItem = document.createElement("li");
+                        descItem.innerText = change.desc;
+                        document.getElementById("kiosk_change").appendChild(descItem);
+                        
+                        let date=change.reg_date.replace("T","일 ")
+                        let dateItem = document.createElement("li");
+                        dateItem.innerText = date;
+                        document.getElementById("kiosk_date").appendChild(dateItem);
+                    });
+
+
+                } else {
+                    // alert('버전 조회 실패'); 여기여기
+                }
+            } catch (error) {
+                alert('오류 발생: ' + error);
+                console.log('오류 발생: ' + error);
+
+            }
+            try{
+                const response = await fetch('http://**/function_select', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data_database = await response.json();
+                    data_database.forEach(item => {
+                        const ulElement = document.getElementById(item.name);
+                        if (ulElement) {
+                            // 첫 번째 input 요소 (result 값을 위한 요소)
+                            const inputResult = ulElement.getElementsByTagName('input')[0];
+                            if (inputResult) {
+                                inputResult.value = item.result;
+                                console.log(item.result);
+                            }
+                            
+                            const inputprompt = ulElement.getElementsByTagName('textarea')[0];
+                            if (inputprompt) {
+                                inputprompt.value = item.prompt;
+                                console.log(item.prompt);
+
+                            }
+
+                            const inputaction = ulElement.getElementsByTagName('input')[1];
+                            if (inputaction) {
+                                inputaction.value = item.action;
+                                console.log(item.action);
+                            }
+
+                            const inputType = ulElement.getElementsByTagName('input')[2];
+                            if (inputType) {
+                                inputType.value = item.type;
+                                console.log(item.type);
+                            }
+
+                            const inputdata = ulElement.getElementsByTagName('input')[3];
+                            if (inputdata) {
+                                inputdata.value = item.data;
+                                console.log(item.data);
+                            }
+
+                        }
+                    });
+                    
+                    
+                } else {
+                    // 응답이 정상이 아닐 경우의 처리
+                    console.error('Response was not ok');
+                }
+            }
+            catch(error){
+                console.log('오류 발생: ' + error);
+            }
+
+
+            const ele = document.querySelectorAll('ul');
+
+            ele.forEach(ul => {
+                const saveButton = ul.querySelector(' .btn_b');
+            
+                if (saveButton) {
+                    saveButton.addEventListener('click', function() {
+                        const inputs = ul.getElementsByTagName('input');
+                        const formData = {
+                            name: ul.id, 
+                            result: inputs[0] ? inputs[0].value : '',
+                            type: inputs[1] ? inputs[1].value : '',
+                            action: inputs[2] ? inputs[2].value : '',
+                            prompt: inputs[3] ? inputs[3].value : '',
+                            data: inputs[4] ? inputs[4].value : ''
+                        };
+            
+                        // POST 요청으로 데이터를 보냅니다
+                        fetch('http://**/function_update', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json', // JSON 형식임을 명시
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify(formData)
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                    });
+                }
+            });
+
+
+        };
+        //챗봇 불러오기 버튼 눌렀을때
+        document.getElementById('load_chatbot').addEventListener('click', async function() {
+            try {
+                const response_chatbot_button = await fetch('http://**/get_chatbot_text_file', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (response_chatbot_button.ok) {
+                    const chatbot_data = await response_chatbot_button.text();
+                    // 데이터 처리 로직을 여기에 추가하세요.
+                    // 예: textarea에 텍스트를 삽입
+                    document.getElementById('textarea_chatbot').value = chatbot_data;
+                } else {
+                    // 오류 처리
+                    console.error('서버에서 응답을 받지 못했습니다.');
+                }
+            } catch (error) {
+                console.error('오류 발생:', error);
+            }
+        });
+        //챗봇 저장버튼 눌렀을때
+        document.getElementById('save_chatbot').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const textContent = document.getElementById('textarea_chatbot').value;
+        
+            const blob_chatbot = new Blob([textContent], { type: 'text/plain' });
+            const file_chatbot = new File([blob_chatbot], "chatbot.txt", { type: 'text/plain' });
+            
+            // FormData 객체를 생성하고 파일을 추가합니다.
+            let formData_chatbot = new FormData();
+            formData_chatbot.append('file', file_chatbot);        
+            const response = await fetch('http://**/uploadfile_chatbot', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: formData_chatbot
+            });
+        
+            if (response.ok) {
+                alert('파일 업로드 성공');
+            } else {
+                alert('파일 업로드 실패');
+            }
+        });
+        // 키오스크 불러오기 버튼 눌렀을때
+        document.getElementById('load_kiosk').addEventListener('click', async function() {
+            //const type=document.getElementById('radio_kiosk').value
+            const type = document.querySelector('input[name="type"]:checked').value;
+            try {
+                const response_kiosk_button = await fetch(`http://**/get_kiosk_text_file/${type}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+
+                    },
+                });
+                if (response_kiosk_button.ok) {
+                    const data_kiosk = await response_kiosk_button.text();
+                    // 예: textarea에 텍스트를 삽입
+                    document.getElementById('textarea2').value = data_kiosk;
+                } else {
+                    // 오류 처리
+                    console.error('서버에서 응답을 받지 못했습니다.');
+                }
+            } catch (error) {
+                console.error('오류 발생:', error);
+            }
+        });
+        // 키오스크 저장버튼 눌렀을때 
+        document.getElementById('save_kiosk').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const textContent = document.getElementById('textarea2').value;
+
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const file = new File([blob], "kiosk.txt", { type: 'text/plain' });
+
+            // FormData 객체를 생성하고 파일을 추가합니다.
+            let formData_kiosk = new FormData();
+            formData_kiosk.append('file', file); // textarea의 텍스트 내용을 추가
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const response = await fetch(`http://**/uploadfile_kiosk/${type}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: formData_kiosk
+            });
+        
+            if (response.ok) {
+                alert('파일 업로드 성공');
+            } else {
+                alert('파일 업로드 실패');
+            }
+        });
+        // 버전 생성 함수
+        document.getElementById("commit_chatbot").addEventListener('click', async function(e) {
+            // 버전 데이터 예시
+            const type = "chatbot"
+            const version = document.getElementById('versionNumber').value;
+            const desc = document.getElementById('versionDesc').value;
+            // 버전 데이터
+            const versionData = {
+                type: type,
+                version: version,
+                desc: desc
+            };
+            try {
+                const response = await fetch('http://**/c_version', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(versionData)
+        
+                });
+        
+                if (response.ok) {
+                    alert('버전 생성 성공');
+                } else {
+                    alert('버전 생성 실패');
+                }
+            } catch (error) {
+                alert('오류 발생: ' + error);
+            }
+            const check={check:"1"};
+            const response_chat = await fetch('http://**/restart_server_chatbot', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json' // JSON 형식임을 명시
+
+                },
+                body: JSON.stringify(check)
+            });
+        
+            if (response_chat.ok) {
+                alert('재시작 성공');
+            } else {
+                alert('재시작 실패');
+            }
+        }),
+        //키오스크 제출
+        document.getElementById("commit_kiosk").addEventListener('click', async function(e) {
+            // 버전 데이터 예시
+            const type = "kiosk"
+            const version = document.getElementById('versionNumber2').value;
+            const desc = document.getElementById('versionDesc2').value;
+            // 버전 데이터
+            const versionData = {
+                type: type,
+                version: version,
+                desc: desc
+            };
+            try {
+                const response = await fetch('http://**/c_version', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(versionData)
+        
+                });
+        
+                if (response.ok) {
+                    alert('버전 생성 성공');
+                } else {
+                    alert('버전 생성 실패');
+                }
+            } catch (error) {
+                alert('오류 발생: ' + error);
+            }
+            const check={check:"1"};
+            
+            const response = await fetch('http://**/restart_server_recommand', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json' // JSON 형식임을 명시
+
+                },
+                body: JSON.stringify(check)
+            });
+            
+
+        
+            if (response.ok) {
+                alert('재시작 성공');
+            } else {
+                alert('재시작 실패');
+            }
+        }),
+
+        // 챗봇 최근 버전 조회 함수
+        document.getElementById("chatbot_refresh").addEventListener('click', async function(e) {
+            try {
+                const response = await fetch('http://**/r_chatbot_version', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data)
+                    document.getElementById("chatbot_version_text").innerHTML = '';
+                    document.getElementById("chatbot_change").innerHTML = '';
+                    document.getElementById("chatbot_date").innerHTML = '';
+
+                    // 배열의 각 요소에 대해 HTML 요소를 생성하고 추가
+                    
+                    data.forEach(change => {
+                        let versionItem = document.createElement("li");
+                        versionItem.innerText = change.version;
+                        document.getElementById("chatbot_version_text").appendChild(versionItem);
+                
+                        let descItem = document.createElement("li");
+                        descItem.innerText = change.desc;
+                        document.getElementById("chatbot_change").appendChild(descItem);
+                        
+                        let date=change.reg_date.replace("T","일 ")
+                        let dateItem = document.createElement("li");
+                        dateItem.innerText = date;
+                        document.getElementById("chatbot_date").appendChild(dateItem);
+                    });
+
+                } else {
+                    console.log('버전 조회 실패');
+                }
+            } catch (error) {
+                console.log('오류 발생: ' + error);
+            }
+        }),
+        //키오스크 최근 버전 조회 함수
+        document.getElementById("kiosk_refresh").addEventListener('click', async function(e) {
+            try {
+                const response = await fetch('http://**/r_kiosk_version', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data)
+                    document.getElementById("kiosk_version_text").innerHTML = '';
+                    document.getElementById("kiosk_change").innerHTML = '';
+                    document.getElementById("kiosk_date").innerHTML = '';
+
+                    // 배열의 각 요소에 대해 HTML 요소를 생성하고 추가
+                    data.forEach(change => {
+                        let versionItem = document.createElement("li");
+                        versionItem.innerText = change.version;
+                        document.getElementById("kiosk_version_text").appendChild(versionItem);
+                
+                        let descItem = document.createElement("li");
+                        descItem.innerText = change.desc;
+                        document.getElementById("kiosk_change").appendChild(descItem);
+                        
+                        let date=change.reg_date.replace("T","일 ")
+                        let dateItem = document.createElement("li");
+                        dateItem.innerText = date;
+                        document.getElementById("kiosk_date").appendChild(dateItem);
+                    });
+
+
+                } else {
+                    alert('버전 조회 실패');
+                }
+            } catch (error) {
+                alert('오류 발생: ' + error);
+                console.log('오류 발생: ' + error);
+
+            }
+        }),        
+        document.getElementById('kiosk_refresh_function').addEventListener('click', async function(e){
+            try{
+                const response = await fetch('http://**/function_select', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    const data_database = await response.json();
+                    data_database.forEach(item => {
+                        const ulElement = document.getElementById(item.name);
+                        if (ulElement) {
+                            // 첫 번째 input 요소 (result 값을 위한 요소)
+                            const inputResult = ulElement.getElementsByTagName('input')[0];
+                            if (inputResult) {
+                                inputResult.value = item.result;
+                                console.log(item.result);
+                            }
+                            
+                            const inputprompt = ulElement.getElementsByTagName('textarea')[0];
+                            if (inputprompt) {
+                                inputprompt.value = item.prompt;
+                                console.log(item.prompt);
+
+                            }
+
+                            const inputaction = ulElement.getElementsByTagName('input')[1];
+                            if (inputaction) {
+                                inputaction.value = item.action;
+                                console.log(item.action);
+                            }
+
+                            const inputType = ulElement.getElementsByTagName('input')[2];
+                            if (inputType) {
+                                inputType.value = item.type;
+                                console.log(item.type);
+                            }
+
+                            const inputdata = ulElement.getElementsByTagName('input')[3];
+                            if (inputdata) {
+                                inputdata.value = item.data;
+                                console.log(item.data);
+                            }
+
+                        }
+                    });
+                    
+                    
+                } else {
+                    // 응답이 정상이 아닐 경우의 처리
+                    console.error('Response was not ok');
+                }
+            }
+            catch(error){
+                console.log('오류 발생: ' + error);
+
+            }
+
+
+        });
+
+
+
+
+        function addChatMessage(message, isUser) {
+            const phoneContent = document.querySelector('.phone_content2');
+            const messageDiv = document.createElement('div');
+        
+            // 사용자 메시지와 API 응답 메시지 스타일 구분
+            messageDiv.classList.add(isUser ? 'user-message' : 'api-response-message');
+            if(isUser==true){
+                messageDiv.textContent = "나: "+message;
+            }
+            else{
+                messageDiv.textContent = message;
+            }
+            phoneContent.appendChild(messageDiv);
+            phoneContent.scrollTop = phoneContent.scrollHeight; // 스크롤을 가장 아래로
+        }
+        function addChatkMessage(message, isUser) {
+            const phoneContent = document.querySelector('.phone_content');
+            const messageDiv = document.createElement('div');
+        
+            // 사용자 메시지와 API 응답 메시지 스타일 구분
+            messageDiv.classList.add(isUser ? 'user-message' : 'api-response-message');
+            if(isUser==true){
+                messageDiv.textContent = "나: "+message;
+            }
+            else{
+                messageDiv.innerHTML = message;
+
+            }
+            phoneContent.appendChild(messageDiv);
+            phoneContent.scrollTop = phoneContent.scrollHeight; // 스크롤을 가장 아래로
+        }
+        
+        async function fetchChatbotResponse(message) {
+            try {
+                const check={admin_serial:"1",question:message};
+                const response_chat = await fetch('http://dev.ai.taky.co.kr:3334/question', {
+                method: 'POST',
+                headers: {
+                    
+                    'Content-Type': 'application/json' // JSON 형식임을 명시
+
+                },
+                body: JSON.stringify(check)
+            });
+        
+            if (response_chat.ok) {
+                alert('응답 성공');
+                const data_chatbot_response = await response_chat.json();
+                // API에서 반환하는 메시지 형식에 맞게 수정하세요.
+                return "챗봇 응답: " + data_chatbot_response.result;
+            } else {
+                alert('응답 실패');
+            }
+                // 여기에 실제 API 호출 코드 작성
+                // 예시: const response = await fetch('YOUR_API_ENDPOINT', { ... });
+                // const data = await response.json();
+                // return data.message; // API에서 받은 메시지
+
+            } catch (error) {
+                console.error('API 호출 실패:', error);
+                return "죄송합니다, 오류가 발생했습니다.";
+            }
+        }
+        
+        async function fetchKiokskbotResponse(message,kiosk_value) {
+            try {
+                const check={page:kiosk_value,admin_serial:"1",question:message};
+                const response_chat = await fetch('http://dev.ai.taky.co.kr:3335/question_test', {
+                method: 'POST',
+                headers: {
+                    
+                    'Content-Type': 'application/json' // JSON 형식임을 명시
+
+                },
+                body: JSON.stringify(check)
+            });
+        
+            if (response_chat.ok) {
+                alert('응답 성공');
+                const data_chatbot_response = await response_chat.json();
+                // API에서 반환하는 메시지 형식에 맞게 수정하세요.
+                return "챗봇 응답: " + data_chatbot_response.result + "<br>" +
+                "action: " + data_chatbot_response.action + "<br>" +
+                "type: " + data_chatbot_response.type + "<br>" +
+                "data: " + data_chatbot_response.data;
+            } else {
+                alert('응답 실패');
+            }
+                // 여기에 실제 API 호출 코드 작성
+                // 예시: const response = await fetch('YOUR_API_ENDPOINT', { ... });
+                // const data = await response.json();
+                // return data.message; // API에서 받은 메시지
+
+            } catch (error) {
+                console.error('API 호출 실패:', error);
+                return "죄송합니다, 오류가 발생했습니다.";
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal2 = document.getElementById('chatbot_test_modal2'); // modal2에 대한 참조
+            const sendButton2 = modal2.querySelector('.phone_footer2 button');
+            const textarea2 = modal2.querySelector('.phone_footer2 textarea');
+
+            const modal = document.getElementById('chatbot_test_modal'); // modal2에 대한 참조
+            const sendButton = modal.querySelector('.phone_footer button');
+            const textArea = modal.querySelector('.phone_footer textarea');
+        
+            sendButton2.addEventListener('click', async () => {
+                const userMessage = textarea2.value;
+                if (!userMessage.trim()) return;
+        
+                addChatMessage(userMessage, true); // 사용자 메시지 표시
+                textarea2.value = ''; // 입력 필드 초기화
+        
+                const apiResponse = await fetchChatbotResponse(userMessage);
+                addChatMessage(apiResponse, false); // API 응답 메시지 표시
+            });
+
+            sendButton.addEventListener('click', async () => {
+                const userMessage = textArea.value;
+                const radio_value_kiosk_test=document.querySelector('input[name="type_kiosk"]:checked').value;
+                console.log(radio_value_kiosk_test);
+                if (!userMessage.trim()) return;
+        
+                addChatkMessage(userMessage, true); // 사용자 메시지 표시
+                textArea.value = ''; // 입력 필드 초기화
+        
+                const apiResponse = await fetchKiokskbotResponse(userMessage,radio_value_kiosk_test);
+                addChatkMessage(apiResponse, false); // API 응답 메시지 표시
+            });
+        });
+        
+
+
+
+
+ 
+        //로그아웃 로직 로그아웃시 토큰을 삭제하고 index.html로 이동한다.
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
